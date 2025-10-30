@@ -1,53 +1,81 @@
-# Shodh-a-Code
+# 🧠 Shodh-a-Code  
+*A lightweight, real-time coding contest platform demonstrating full-stack system design.*
 
-A lightweight, real-time coding contest prototype that showcases an end-to-end system: a React-based UI for participating in contests and a Spring Boot backend that validates submissions by compiling and running user code in an isolated Docker environment, persisting results to MongoDB, and surfacing a live leaderboard.
+---
 
-## 1) Overview & Objective
-Shodh-a-Code simulates a live contest experience where participants:
-- Join a contest using an ID and username
-- Read problems, write code, and submit solutions
-- Receive asynchronous verdicts (Pending → Running → Accepted/Wrong Answer)
-- Watch a live-updating leaderboard
+## 🎯 Overview & Objective
 
-This project demonstrates full-stack engineering across API design, async processing, containerized code execution, and real-time UX.
+**Shodh-a-Code** simulates a live coding contest experience where participants can:
 
-## 2) Tech Stack
-- Frontend: Vite + React + Tailwind CSS, React Router, Monaco Editor
-- Backend: Spring Boot (Web, Data MongoDB, Lombok)
-- Database: MongoDB
-- Execution: Docker (openjdk:17) invoked from Java ProcessBuilder
-- Orchestration: docker-compose
+- 🧑‍💻 Join a contest using an ID and username  
+- ✍️ Read problems, write and submit code  
+- ⚙️ Receive asynchronous verdicts (`Pending → Running → Accepted/Wrong Answer`)  
+- 🏆 Watch a live-updating leaderboard  
 
-## 3) Setup & Run (docker-compose)
-Prereqs: Docker + Docker Compose
+This project demonstrates end-to-end engineering across API design, async processing, containerized code execution, and real-time UX.
 
+---
+
+## 🧩 Tech Stack
+
+| Layer | Technologies |
+|-------|---------------|
+| **Frontend** | React (Vite) · Tailwind CSS · React Router · Monaco Editor |
+| **Backend** | Spring Boot (Web, Data MongoDB, Lombok) |
+| **Database** | MongoDB |
+| **Code Execution** | Docker (`openjdk:17`) invoked via Java `ProcessBuilder` |
+| **Orchestration** | Docker Compose |
+
+---
+
+## ⚙️ Setup & Run (with Docker Compose)
+
+### 🧱 Prerequisites
+- Docker + Docker Compose installed
+
+### ▶️ Steps
 ```bash
 # From repository root
 docker compose up --build
-```
+Services
 
-Services:
-- Frontend: http://localhost:5173
-- Backend: http://localhost:8080
-- MongoDB: localhost:27017 (container name: mongo)
+Service	URL	Container
+Frontend	http://localhost:5173
+	shodh-frontend
+Backend	http://localhost:8080
+	shodh-backend
+MongoDB	localhost:27017	shodh-mongo
 
-Environment (compose):
-- `SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/shodh`
+Environment
+SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/shodh
+Seed Data
+On backend startup:
 
-Seed Data: On backend start, a sample contest ("Intro Contest"), two problems, and a sample user are inserted if collections are empty.
+A sample contest (“Intro Contest”)
 
-Local Dev (optional):
-- Backend: `cd backend && mvn spring-boot:run`
-- Frontend: `cd frontend && npm install && npm run dev`
+Two sample problems
 
-## 4) API Endpoints
-Base URL: `http://localhost:8080`
+One sample user
+are inserted automatically if the collections are empty.
 
-### GET /api/contests/{contestId}
-Returns contest details including a list of problems.
+🧑‍💻 Local Development (Optional)
+# Backend
+cd backend
+mvn spring-boot:run
 
-Response 200:
-```json
+# Frontend
+cd frontend
+npm install
+npm run dev
+
+🔗 API Endpoints
+
+Base URL: http://localhost:8080
+
+GET /api/contests/{contestId}
+
+Fetch contest details with problems.
+
 {
   "id": "<contestId>",
   "name": "Intro Contest",
@@ -57,96 +85,99 @@ Response 200:
     { "id": "<problemId>", "title": "Echo", "description": "..." }
   ]
 }
-```
 
-### GET /api/contests/{contestId}/leaderboard
-Returns aggregated leaderboard (best score per problem, summed per user), sorted desc.
+GET /api/contests/{contestId}/leaderboard
 
-Response 200:
-```json
+Returns leaderboard, sorted by total score.
+
 [
   { "userId": "<userId>", "username": "tester", "totalScore": 100 }
 ]
-```
 
-### POST /api/submissions
-Accepts a new submission and returns a `submissionId`. The backend processes it asynchronously.
+POST /api/submissions
 
-Request:
-```json
+Submit code for a problem.
+
 {
   "userId": "<userId>",
   "problemId": "<problemId>",
   "code": "class Solution { public static void main(String[] a){ System.out.println(\"hello\"); }}",
   "language": "java"
 }
-```
 
-Response 201:
-```json
+
+Response
+
 { "submissionId": "<id>" }
-```
 
-### GET /api/submissions/{submissionId}
-Returns latest status and result of a submission.
+GET /api/submissions/{submissionId}
 
-Response 200:
-```json
+Check submission status.
+
 {
   "id": "<id>",
   "status": "Pending | Running | Accepted | Wrong Answer | Error",
   "result": "OK | Mismatch | Compilation/Runtime Error | System Error",
   "score": 0
 }
-```
 
-## 5) Design Decisions & Architecture
-- Data Model (MongoDB `@Document`): `User`, `Contest`, `Problem`, `Submission` (+ `LeaderboardEntry` DTO model)
-- Repositories: Spring Data `MongoRepository` for CRUD and simple queries
-- Services:
-  - `ContestService`: CRUD, list problems, compute leaderboard by best-per-problem sum
-  - `SubmissionService`: CRUD, status updates, submission queries
-  - `UserService`: CRUD, get-or-create by username, score accumulation
-  - `CodeExecutionService`: Orchestrates Docker execution of user code, compares output, updates submission status and user score
-- Execution Flow:
-  1) Frontend POSTs a submission → backend persists with Pending
-  2) Backend asynchronously compiles/runs code in a container, updates status to Running then Accepted/Wrong Answer/Error
-  3) Frontend polls status every few seconds and refreshes the leaderboard periodically
+🧱 Design Decisions & Architecture
+🧩 Data Model (MongoDB)
 
-Architecture Diagram (high-level):
+User, Contest, Problem, Submission
 
-```mermaid
+LeaderboardEntry (DTO for aggregated scores)
+
+🧠 Core Services
+Service	Responsibility
+ContestService	CRUD, list problems, compute leaderboard
+SubmissionService	CRUD, track status, submission queries
+UserService	CRUD, get-or-create user, update scores
+CodeExecutionService	Execute code in Docker, compare output, update status & score
+🔄 Execution Flow
+
+Frontend posts a submission → backend marks it Pending
+
+Backend asynchronously compiles & executes inside a Docker container
+
+Updates status → Running → Accepted/Wrong Answer/Error
+
+Frontend polls submission & leaderboard endpoints for updates
+
+🧭 System Diagram
 flowchart LR
-  subgraph Frontend (React)
-    UI[Join/Contest UI]\nMonaco Editor --> APIClient
+  subgraph Frontend [Frontend (React)]
+    UI[Join/Contest UI & Monaco Editor] --> APIClient
   end
 
-  APIClient -- REST --> B[Spring Boot API]
-  B -- MongoRepository --> DB[(MongoDB)]
-  B -- ProcessBuilder/Docker --> D[(openjdk:17 container)]
-  D -- stdout --> B
+  APIClient -- REST --> Backend[Spring Boot API]
+  Backend -- MongoRepository --> DB[(MongoDB)]
+  Backend -- ProcessBuilder/Docker --> DockerExec[(openjdk:17 Container)]
+  DockerExec -- stdout --> Backend
 
-  subgraph Backend
-    B
-  end
-```
+🔒 Security & Isolation
 
-Security & Isolation:
-- Submissions are executed inside a Docker container with a dedicated working directory and time limit. Further sandboxing (seccomp/apparmor/cgroups) and resource controls can be added for production.
+Each submission runs inside an isolated Docker container
 
-Scoring:
-- Prototype uses a simple scheme (e.g., Accepted = 100). Extendable to multiple test cases, partial scoring, and penalties.
+Temporary directories per run
 
-## 6) Future Improvements & Challenges
-- Multi-language support (Python, C++, JS) with per-language images and commands
-- Test suite expansion: multiple inputs/outputs per problem with aggregated scoring
-- Real-time updates via WebSockets/SSE instead of polling
-- AuthN/AuthZ (login, roles) and per-contest user isolation
-- Enhanced sandboxing: memory/CPU limits, network isolation, file whitelist
-- Observability: structured logs, metrics, tracing, per-submission diagnostics
-- CI/CD and automated integration tests (mock Docker runtime)
-- Admin tooling: problem authoring UI, contest management, bulk imports
+Future scope: add cgroup/namespace-based sandboxing and resource limits
 
----
+🧮 Scoring
 
-References: See `requirements.md` for the original brief, evaluation criteria, and deliverables.
+Accepted = 100 points
+
+Extendable to multi-testcase, partial scoring, and penalty schemes
+
+🚧 Future Improvements
+Area	Improvement
+Multi-language support	Add Python, C++, JS execution images
+Test system	Add multi-input test cases & aggregated scoring
+Real-time updates	Replace polling with WebSockets/SSE
+Security	Sandboxing with CPU/memory limits
+Observability	Logs, metrics, and per-submission diagnostics
+CI/CD	Automated testing & container build pipelines
+Admin Tools	Contest management dashboard
+📚 References
+
+See requirements.md for the original brief, evaluation criteria, and deliverables.
