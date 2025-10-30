@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { API_BASE_URL } from '../config'
 
 export default function Leaderboard({ contestId }) {
   const [entries, setEntries] = useState([])
@@ -9,7 +10,7 @@ export default function Leaderboard({ contestId }) {
   async function fetchLeaderboard(id) {
     try {
       setError('')
-      const res = await fetch(`/api/contests/${id}/leaderboard`)
+      const res = await fetch(`${API_BASE_URL}/api/contests/${id}/leaderboard`)
       if (!res.ok) throw new Error('Failed to load leaderboard')
       const data = await res.json()
       // Ensure sorted desc just in case

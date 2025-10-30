@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Editor from '@monaco-editor/react'
 import Leaderboard from '../components/Leaderboard.jsx'
-
+import { API_BASE_URL } from '../config'
 export default function ContestPage() {
   const { id } = useParams()
   const [loading, setLoading] = useState(true)
@@ -21,7 +21,7 @@ export default function ContestPage() {
       setLoading(true)
       setError('')
       try {
-        const res = await fetch(`/api/contests/${id}`)
+        const res = await fetch(`${API_BASE_URL}/api/contests/${id}`)
         if (!res.ok) throw new Error(`Failed to load contest (${res.status})`)
         const data = await res.json()
         if (!cancelled) {
@@ -64,7 +64,7 @@ export default function ContestPage() {
     setSubmissionStatus('')
     setSubmissionId('')
     try {
-      const res = await fetch('/api/submissions', {
+      const res = await fetch(`${API_BASE_URL}/api/submissions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -82,7 +82,7 @@ export default function ContestPage() {
       if (pollRef.current) clearInterval(pollRef.current)
       pollRef.current = setInterval(async () => {
         try {
-          const sres = await fetch(`/api/submissions/${sid}`)
+          const sres = await fetch(`${API_BASE_URL}/api/submissions/${sid}`)
           if (!sres.ok) return
           const sdata = await sres.json()
           setSubmissionStatus(sdata?.status || '')

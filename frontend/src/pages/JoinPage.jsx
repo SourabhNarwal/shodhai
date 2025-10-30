@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { API_BASE_URL } from '../config'
 export default function JoinPage() {
   const [contestId, setContestId] = useState('')
   const [username, setUsername] = useState('')
@@ -16,7 +16,7 @@ export default function JoinPage() {
       return;
     }
     try {
-      const res = await fetch('/api/users/join', {
+      const res = await fetch(`${API_BASE_URL}/api/users/join`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: name }),

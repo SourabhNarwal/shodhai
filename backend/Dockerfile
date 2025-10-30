@@ -1,6 +1,6 @@
-FROM openjdk:17
+FROM openjdk:17-slim
 
-# Install Maven
+# Install Maven (Debian-based slim image supports apt)
 RUN apt-get update && \
     apt-get install -y maven && \
     rm -rf /var/lib/apt/lists/*
