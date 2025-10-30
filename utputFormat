@@ -1,0 +1,7 @@
+HTTP/1.1 400 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 29 Oct 2025 13:05:41 GMT
+Connection: close
+
+{"timestamp":"2025-10-29T13:05:41.355+00:00","status":400,"error":"Bad Request","path":"/api/submissions"}

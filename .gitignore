@@ -1,0 +1,78 @@
+# General
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.tmp
+*.swp
+.env
+.env.*
+
+# Node / Frontend
+node_modules/
+.dist/
+coverage/
+.cache/
+.eslintcache
+
+# Vite
+vite.cache/
+
+# Java / Backend
+.target/
+/target/
+*.iml
+.mvn/wrapper/maven-wrapper.jar
+.springBeans
+
+# OS
+*.DS_Store
+
+# Docker
+**/.docker/
+**/.env.local
+
+# Logs
+**/logs/
+**/*.log
+# Node
+node_modules
+dist
+.vite
+.env
+
+# Java / Maven
+target
+*.jar
+*.class
+*.log
+
+# OS / IDE files
+.DS_Store
+.idea
+.vscode
+*.iml
+
+# Docker
+*.pid
+# Node
+node_modules
+dist
+.vite
+.env
+
+# Java / Maven
+target
+*.jar
+*.class
+*.log
+
+# OS / IDE files
+.DS_Store
+.idea
+.vscode
+*.iml
+
+# Docker
+*.pid
